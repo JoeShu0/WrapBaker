@@ -85,6 +85,7 @@ class WrapBakerPanel(bpy.types.Panel):
         normal_bake_row= layout.row()
         normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
         AO_bake_row= layout.row()
+        AO_bake_row.operator_context = "INVOKE_DEFAULT"
         AO_bake_row.operator("object.bake_wrap_ao",text="Bake Selected Wrap SDF AO")
 
 
