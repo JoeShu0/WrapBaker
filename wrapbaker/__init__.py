@@ -70,8 +70,8 @@ class WrapBakerMenu(bpy.types.Panel):
         row.operator("object.bake_wrap_ao")
 
 #3D视图右侧工具面板
-class WrapBakerPanel(bpy.types.Panel):
-    bl_idname      = "WrapBaker_panel"
+class WRAPBAKER_PT_Panel(bpy.types.Panel):
+    bl_idname      = "WRAPBAKER_PT_Panel"
     bl_label       = "WrapBaker"
     bl_category    = "WrapBaker"
     bl_space_type  = "VIEW_3D"
@@ -106,7 +106,7 @@ def register():
     bpy.types.VIEW3D_MT_object.append(menu_func)
     #bpy.types.VIEW3D_MT_object.append(menu_func)  # Adds the new operator to an existing menu.
     #bpy.utils.register_class(WrapBakerMenu)
-    bpy.utils.register_class(WrapBakerPanel)
+    bpy.utils.register_class(WRAPBAKER_PT_Panel)
 
 
 def unregister():
@@ -114,7 +114,7 @@ def unregister():
     bpy.utils.unregister_class(BakeWarpAO)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     #bpy.utils.unregister_class(WrapBakerMenu)
-    bpy.utils.unregister_class(WrapBakerPanel)
+    bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
 
 
 # This allows you to run the script directly from Blender's Text editor
