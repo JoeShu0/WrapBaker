@@ -27,10 +27,12 @@ bl_info = {
 if "bpy" in locals():
     import importlib
     importlib.reload(operators.BakeOps)
+    importlib.reload(operators.ViewOps)
 
 else:
     import bpy
     from .operators import BakeOps 
+    from .operators import ViewOps 
 
 class SomeModalOperator(bpy.types.Operator):
     bl_idname = "my.operator"
@@ -64,17 +66,12 @@ class WrapBakerMenu(bpy.types.Panel):
     bl_label = "Wrap Normal AO Baker"
     bl_idname = "object.wrap_baker"
 
-    
-
     def draw(self, context):
         layout = self.layout
-
         row = layout.row()
         row.operator("object.bake_wrap_normal")
-
         row = layout.row()
         row.operator("object.bake_wrap_ao")
-
 
 
 #3D视图右侧工具面板
