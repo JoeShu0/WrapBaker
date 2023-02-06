@@ -19,40 +19,19 @@
 
 bl_info = {
     "name": "Wrap Normal AO Baker",
-    "blender": (3, 20, 0),
+    "blender": (3, 40, 0),
     "category": "Object",
 }
 
 
 if "bpy" in locals():
     import importlib
-    importlib.reload(WrapNormal)
-    importlib.reload(WarpAO)
+    importlib.reload(operators.BakeOps)
+
 else:
     import bpy
-    from . import WrapNormal 
-    from . import WarpAO
+    from .operators import BakeOps 
 
-class BakeWarpNomral(bpy.types.Operator):
-    """Generate Wrap mesh for selected mesh and transfer normal to mesh"""      # Use this as a tooltip for menu items and buttons.
-    bl_idname = "object.bake_wrap_normal"        # Unique identifier for buttons and menu items to reference.
-    bl_label = "Bake Wrap Normal"         # Display name in the interface.
-    bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
-
-    def execute(self, context):        # execute() is called when running the operator.
-        # The original script
-        WrapNormal.WrapSelectedObjectTranferNormal()
-        return {'FINISHED'}            # Lets Blender know the operator finished successfully.
-
-class BakeWarpAO(bpy.types.Operator):
-    """Bake Wrap AO to selected mesh using wrap mesh"""      # Use this as a tooltip for menu items and buttons.
-    bl_idname = "object.bake_wrap_ao"        # Unique identifier for buttons and menu items to reference.
-    bl_label = "Bake Wrap AO"         # Display name in the interface.
-    bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
-    def execute(self, context):        # execute() is called when running the operator.
-        # The original script
-        WarpAO.BakeAOUsingWrapMesh()
-        return {'FINISHED'}            # Lets Blender know the operator finished successfully.
 
 #Object Menu
 class WrapBakerMenu(bpy.types.Panel):
@@ -81,7 +60,8 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         obj = context.object
-        
+        wm = context.window_manager
+
         normal_bake_row= layout.row()
         normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
         AO_bake_row= layout.row()
@@ -92,28 +72,20 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
 #Object 下拉菜单
 def menu_func(self, context):
     self.layout.label(text="Wrap Baker")
-    self.layout.operator(BakeWarpNomral.bl_idname)
-    self.layout.operator(BakeWarpAO.bl_idname)
-    #self.layout.menu(WrapBakerMenu.bl_idname)
+    self.layout.operator(BakeOps.BakeWarpNomral.bl_idname)
+    self.layout.operator(BakeOps.BakeWarpAO.bl_idname)
 
 def register():
-    #
-    #bpy.types.Object.aobake_progress = bpy.props.FloatProperty( name="AO Bake Progress", subtype="PERCENTAGE",soft_min=0, soft_max=100, precision=0,)
-    #bpy.types.Object.aobake_progress_label = bpy.props.StringProperty()
-
-    bpy.utils.register_class(BakeWarpNomral)
-    bpy.utils.register_class(BakeWarpAO)
+    bpy.utils.register_class(BakeOps.BakeWarpNomral)
+    bpy.utils.register_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.append(menu_func)
-    #bpy.types.VIEW3D_MT_object.append(menu_func)  # Adds the new operator to an existing menu.
-    #bpy.utils.register_class(WrapBakerMenu)
     bpy.utils.register_class(WRAPBAKER_PT_Panel)
 
 
 def unregister():
-    bpy.utils.unregister_class(BakeWarpNomral)
-    bpy.utils.unregister_class(BakeWarpAO)
+    bpy.utils.unregister_class(BakeOps.BakeWarpNomral)
+    bpy.utils.unregister_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
-    #bpy.utils.unregister_class(WrapBakerMenu)
     bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
 
 
