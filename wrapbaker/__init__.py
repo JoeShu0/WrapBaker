@@ -32,12 +32,39 @@ else:
     import bpy
     from .operators import BakeOps 
 
+class SomeModalOperator(bpy.types.Operator):
+    bl_idname = "my.operator"
+    bl_label = "My Operator"
+
+    def modal(self, context, event):
+        print("running")
+        if not context.window_manager.my_operator_toggle:
+            context.window_manager.event_timer_remove(self._timer)
+            return {'FINISHED'}
+        return {'PASS_THROUGH'}
+
+    def invoke(self, context, event):
+        self._timer = context.window_manager.event_timer_add(0.01, window=context.window)
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+def update_function(self, context):
+    if self.my_operator_toggle:
+        bpy.ops.my.operator('INVOKE_DEFAULT')
+    return
+
+bpy.types.WindowManager.my_operator_toggle = bpy.props.BoolProperty(
+                                                 default = False,
+                                                 update = update_function)
+
 
 #Object Menu
 class WrapBakerMenu(bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
     bl_label = "Wrap Normal AO Baker"
     bl_idname = "object.wrap_baker"
+
+    
 
     def draw(self, context):
         layout = self.layout
@@ -47,6 +74,8 @@ class WrapBakerMenu(bpy.types.Panel):
 
         row = layout.row()
         row.operator("object.bake_wrap_ao")
+
+
 
 #3D视图右侧工具面板
 class WRAPBAKER_PT_Panel(bpy.types.Panel):
@@ -61,6 +90,9 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
         layout = self.layout
         obj = context.object
         wm = context.window_manager
+
+        label = "Operator ON" if wm.my_operator_toggle else "Operator OFF"
+        layout.prop(wm, 'my_operator_toggle', text=label, toggle=True)
 
         normal_bake_row= layout.row()
         normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
@@ -81,12 +113,16 @@ def register():
     bpy.types.VIEW3D_MT_object.append(menu_func)
     bpy.utils.register_class(WRAPBAKER_PT_Panel)
 
+    bpy.utils.register_class(SomeModalOperator)
+
 
 def unregister():
     bpy.utils.unregister_class(BakeOps.BakeWarpNomral)
     bpy.utils.unregister_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
+
+    bpy.utils.unregister_class(SomeModalOperator)
 
 
 # This allows you to run the script directly from Blender's Text editor

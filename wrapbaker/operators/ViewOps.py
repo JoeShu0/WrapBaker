@@ -1,5 +1,7 @@
 import bpy
 
+
+
 class ToggleNormalView(bpy.types.Operator):
     """Toggle the view bewteen shaded and Normal view"""      # Use this as a tooltip for menu items and buttons.
     bl_idname = "object.toggle_normal_view"        # Unique identifier for buttons and menu items to reference.
