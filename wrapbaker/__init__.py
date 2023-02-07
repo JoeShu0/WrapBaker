@@ -33,41 +33,6 @@ else:
     import bpy
     from .operators import BakeOps 
     from .operators import ViewOps 
-"""
-class SomeModalOperator(bpy.types.Operator):
-    bl_idname = "my.operator"
-    bl_label = "My Operator"
-
-    def modal(self, context, event):
-        print("running")
-        if not context.scene.my_operator_toggle:
-            context.window_manager.event_timer_remove(self._timer)
-            return {'FINISHED'}
-        return {'PASS_THROUGH'}
-
-    def invoke(self, context, event):
-        self._timer = context.window_manager.event_timer_add(0.01, window=context.window)
-        context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
-
-def update_function(self, context):
-    if self.my_operator_toggle:
-        bpy.ops.my.operator('INVOKE_DEFAULT')
-    return
-
-bpy.types.WindowManager.my_operator_toggle = bpy.props.BoolProperty(
-                                                 default = False,
-                                                 update = update_function)
-
-bpy.types.Scene.my_operator_toggle = bpy.props.BoolProperty(
-                                                 default = False,
-                                                 update = update_function)
-                                                 
-def menu_func(self, context):
-    self.layout.operator_context = 'INVOKE_DEFAULT'
-    self.layout.operator(ExportSomeData.bl_idname, text="Text Export Operator")
-
-"""
 
 
 #Object Menu
@@ -106,9 +71,12 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
         view_option_column.prop(scene, 'vert_color_view', text=label, toggle=True)
 
         normal_bake_row= layout.row()
-        normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
+        normal_bake_row.operator("object.bake_wrap_normal_modal",text="Bake Selected Wrap Normal")
         AO_bake_row= layout.row()
         AO_bake_row.operator("object.bake_wrap_ao",text="Bake Selected Wrap SDF AO")
+
+        #Testmodel= layout.row()
+        #Testmodel.operator("object.test_modal_op",text="Test simple modal")
 
 class WRAPBAKER_PT_VertPaintPanel(bpy.types.Panel):
     bl_idname      = "WRAPBAKER_PT_VertPaintPanel"
@@ -136,16 +104,19 @@ def menu_func(self, context):
     self.layout.operator(BakeOps.BakeWarpAO.bl_idname)
 
 def register():
-    bpy.utils.register_class(BakeOps.BakeWarpNomral)
+    bpy.utils.register_class(BakeOps.BakeWarpNomralModal)
     bpy.utils.register_class(BakeOps.BakeWarpAO)
+
+
     bpy.types.VIEW3D_MT_object.append(menu_func)
     bpy.utils.register_class(WRAPBAKER_PT_Panel)
     bpy.utils.register_class(WRAPBAKER_PT_VertPaintPanel)
 
-
 def unregister():
-    bpy.utils.unregister_class(BakeOps.BakeWarpNomral)
+    bpy.utils.unregister_class(BakeOps.BakeWarpNomralModal)
     bpy.utils.unregister_class(BakeOps.BakeWarpAO)
+
+
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
     bpy.utils.unregister_class(WRAPBAKER_PT_VertPaintPanel)
