@@ -33,14 +33,14 @@ else:
     import bpy
     from .operators import BakeOps 
     from .operators import ViewOps 
-
+"""
 class SomeModalOperator(bpy.types.Operator):
     bl_idname = "my.operator"
     bl_label = "My Operator"
 
     def modal(self, context, event):
         print("running")
-        if not context.window_manager.my_operator_toggle:
+        if not context.scene.my_operator_toggle:
             context.window_manager.event_timer_remove(self._timer)
             return {'FINISHED'}
         return {'PASS_THROUGH'}
@@ -58,6 +58,10 @@ def update_function(self, context):
 bpy.types.WindowManager.my_operator_toggle = bpy.props.BoolProperty(
                                                  default = False,
                                                  update = update_function)
+
+bpy.types.Scene.my_operator_toggle = bpy.props.BoolProperty(
+                                                 default = False,
+                                                 update = update_function)"""
 
 
 #Object Menu
@@ -87,15 +91,37 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
         layout = self.layout
         obj = context.object
         wm = context.window_manager
+        scene = context.scene
 
-        label = "Operator ON" if wm.my_operator_toggle else "Operator OFF"
-        layout.prop(wm, 'my_operator_toggle', text=label, toggle=True)
+        view_option_column = layout.row()
+        label = "VertNormalView ON" if scene.vert_normal_view else "VertNormalView OFF"
+        view_option_column.prop(scene, 'vert_normal_view', text=label, toggle=True)
+        label = "VertColorView ON" if scene.vert_color_view else "VertColorView OFF"
+        view_option_column.prop(scene, 'vert_color_view', text=label, toggle=True)
 
         normal_bake_row= layout.row()
         normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
         AO_bake_row= layout.row()
         AO_bake_row.operator_context = "INVOKE_DEFAULT"
         AO_bake_row.operator("object.bake_wrap_ao",text="Bake Selected Wrap SDF AO")
+
+class WRAPBAKER_PT_VertPaintPanel(bpy.types.Panel):
+    bl_idname      = "WRAPBAKER_PT_VertPaintPanel"
+    bl_label       = "WrapBaker"
+    bl_category    = "WrapBaker"
+    bl_space_type  = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context     = "vertexpaint"
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        view_option_column = layout.row()
+        label = "VertNormalView ON" if scene.vert_normal_view else "VertNormalView OFF"
+        view_option_column.prop(scene, 'vert_normal_view', text=label, toggle=True)
+        label = "VertColorView ON" if scene.vert_color_view else "VertColorView OFF"
+        view_option_column.prop(scene, 'vert_color_view', text=label, toggle=True)
 
 
 #Object 下拉菜单
@@ -109,8 +135,7 @@ def register():
     bpy.utils.register_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.append(menu_func)
     bpy.utils.register_class(WRAPBAKER_PT_Panel)
-
-    bpy.utils.register_class(SomeModalOperator)
+    bpy.utils.register_class(WRAPBAKER_PT_VertPaintPanel)
 
 
 def unregister():
@@ -118,8 +143,7 @@ def unregister():
     bpy.utils.unregister_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
-
-    bpy.utils.unregister_class(SomeModalOperator)
+    bpy.utils.register_class(WRAPBAKER_PT_VertPaintPanel)
 
 
 # This allows you to run the script directly from Blender's Text editor
