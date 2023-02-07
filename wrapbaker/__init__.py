@@ -61,7 +61,13 @@ bpy.types.WindowManager.my_operator_toggle = bpy.props.BoolProperty(
 
 bpy.types.Scene.my_operator_toggle = bpy.props.BoolProperty(
                                                  default = False,
-                                                 update = update_function)"""
+                                                 update = update_function)
+                                                 
+def menu_func(self, context):
+    self.layout.operator_context = 'INVOKE_DEFAULT'
+    self.layout.operator(ExportSomeData.bl_idname, text="Text Export Operator")
+
+"""
 
 
 #Object Menu
@@ -102,7 +108,6 @@ class WRAPBAKER_PT_Panel(bpy.types.Panel):
         normal_bake_row= layout.row()
         normal_bake_row.operator("object.bake_wrap_normal",text="Bake Selected Wrap Normal")
         AO_bake_row= layout.row()
-        AO_bake_row.operator_context = "INVOKE_DEFAULT"
         AO_bake_row.operator("object.bake_wrap_ao",text="Bake Selected Wrap SDF AO")
 
 class WRAPBAKER_PT_VertPaintPanel(bpy.types.Panel):
@@ -143,7 +148,7 @@ def unregister():
     bpy.utils.unregister_class(BakeOps.BakeWarpAO)
     bpy.types.VIEW3D_MT_object.remove(menu_func)
     bpy.utils.unregister_class(WRAPBAKER_PT_Panel)
-    bpy.utils.register_class(WRAPBAKER_PT_VertPaintPanel)
+    bpy.utils.unregister_class(WRAPBAKER_PT_VertPaintPanel)
 
 
 # This allows you to run the script directly from Blender's Text editor
