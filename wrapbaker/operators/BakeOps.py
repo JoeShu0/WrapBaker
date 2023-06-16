@@ -28,14 +28,15 @@ def new_GeometryNodes_group():
     '''
     node_group = bpy.data.node_groups.new('GeometryNodes_VMV', 'GeometryNodeTree')
     inNode = node_group.nodes.new('NodeGroupInput')
-    ##inNode.outputs.new('NodeSocketGeometry', 'Mesh')
-
+    #Create Key Mesh Inputs and outputs
+    node_group.inputs.new('NodeSocketGeometry', 'Mesh')
+    
     #Extrude Mesh
     ExtrNode = node_group.nodes.new('GeometryNodeExtrudeMesh')
     ExtrNode.name = "VMV_ExtrudeNode"
     ExtrNode.inputs['Offset Scale'].default_value = 0.5
     ExtrNode.inputs['Individual'].default_value = False
-    node_group.links.new(inNode.outputs[0], ExtrNode.inputs['Mesh'])
+    node_group.links.new(inNode.outputs['Mesh'], ExtrNode.inputs['Mesh'])
     
     M2Vnode = node_group.nodes.new('GeometryNodeMeshToVolume')
     M2Vnode.inputs['Voxel Amount'].default_value = 32 #Voxel Amount
@@ -45,8 +46,8 @@ def new_GeometryNodes_group():
     node_group.links.new(M2Vnode.outputs['Volume'], V2Mnode.inputs['Volume'])
     
     outNode = node_group.nodes.new('NodeGroupOutput')
-    #outNode.inputs.new('NodeSocketGeometry', 'Mesh')
-    node_group.links.new(V2Mnode.outputs['Mesh'], outNode.inputs[0])
+    node_group.outputs.new('NodeSocketGeometry', 'Mesh')
+    node_group.links.new(V2Mnode.outputs['Mesh'], outNode.inputs['Mesh'])
     
     #inNode.location = Vector((0, 0))
     #outNode.location = Vector((3*outNode.width, 0))
