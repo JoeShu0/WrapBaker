@@ -21,8 +21,8 @@ bl_info = {
     "name": "Wrap Normal AO Baker",
     "description": "Wrap normal and AO baker for stylized Art",
     "author": "Joe Shu",
-    "version": (0, 1),
-    "blender": (3, 30, 0),
+    "version": (0, 2),
+    "blender": (3, 60, 0),
     "category": "Object",
 }
 

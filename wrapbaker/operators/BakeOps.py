@@ -60,6 +60,11 @@ def GetVMVGeoNodeGroup():
     else:
         return new_GeometryNodes_group()
 
+def DeleteAttributeByName(Attribs, Name):
+    AttIndex = Attribs.find(Name)
+    if(AttIndex != -1):
+        Attribs.remove(Attribs[AttIndex])
+
 def WrapSelectedObjectTranferNormal():
 
     #global obj_original, obj_mod
@@ -277,17 +282,38 @@ def saveSDasVertexColor(obj, signDists, wm):
     bpy.ops.object.select_all(action='DESELECT')
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
-    
     mesh = obj.data
-    bpy.ops.object.mode_set(mode = 'VERTEX_PAINT')
-    for vertindex in range(len(signDists)):
-        for polygon in mesh.polygons:
-            for i, index in enumerate(polygon.vertices):
-                if vertindex == index:
-                    loop_index = polygon.loop_indices[i]
+    if (3, 6, 0) > bpy.app.version:#3.6版本之前，使用原有VertexColor赋予
+        bpy.ops.object.mode_set(mode = 'VERTEX_PAINT')
+        for vertindex in range(len(signDists)):
+            for polygon in mesh.polygons:
+                for i, index in enumerate(polygon.vertices):
+                    if vertindex == index:
+                        loop_index = polygon.loop_indices[i]
+                        r = signDists[vertindex]
+                        mesh.vertex_colors.active.data[loop_index].color = [r,r,r,1.0]
+            wm.progress_update(int((vertindex/len(signDists)) * 45) + 55)
+    else:#3.6版本之之后，使用Attribute赋予，需要移除可能存在的面顶点绘制数据
+        #移除上一次计算生成的顶点色数据以及可能存在的面顶点（FaceCorner）绘制颜色（只影响显示效果，导出还是只导出VC）
+        att = mesh.attributes
+        DeleteAttributeByName(att, "Color")
+        DeleteAttributeByName(att, "Attribute")
+        vc=mesh.color_attributes.new(
+            name='Color',
+            type='FLOAT_COLOR',
+            domain='POINT',
+        )
+        for vertindex in range(len(signDists)):
+            for i,index in enumerate(mesh.vertices):
+                if vertindex == i:
                     r = signDists[vertindex]
-                    mesh.vertex_colors.active.data[loop_index].color = [r,r,r,1.0]
-        wm.progress_update(int((vertindex/len(signDists)) * 45) + 55)
+                    try:
+                        mesh.attributes['Color'].data[i].color=[r,r,r,1.0]
+                        #print('Suc')
+                    except Exception as err:
+                        print('fail',err)
+            wm.progress_update(int((vertindex/len(signDists)) * 45) + 55)
+
     bpy.ops.object.mode_set(mode = 'OBJECT')
 
 def BakeAOUsingWrapMesh():
