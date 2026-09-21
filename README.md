@@ -7,5 +7,8 @@ It can be used on normal mesh
 As well as foliage leaves(to create stylized vertex normal and AO)
 ![](https://github.com/JoeShu0/WrapBaker/blob/main/Doc/Gifs/wrapnormal02.gif)
 
-This plugin support Blender version 3.3 to 3.6LTS
-此插件支持Blender版本 ： 3.3 至 3.6LTS
+This plugin support Blender version 3.5 to 5.2LTS
+此插件支持Blender版本 ： 3.5 至 5.2LTS
+
+Tested on 3.5.1, 3.6.9, 4.0.2, 4.4.1 and 5.2.2 LTS.
+已在 3.5.1、3.6.9、4.0.2、4.4.1、5.2.2 LTS 上实测通过。
